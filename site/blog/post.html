@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta-tags />
+
+	<title>{{ title }}</title>
+
+	<link rel="stylesheet" href="/styles/common.css" />
+	<script src="/src/theme.js" defer="true"></script>
+	
+	<style id="jsonly">.jsonly{display: none;}</style>
+	<noscript>
+		<link rel="stylesheet" href="/styles/theme-noscript.css" />
+	</noscript>
+
+	<font href="/assets/RobotoMonoNerdFont-Regular.ttf" family="Roboto Mono" />
+</head>
+<body>
+	<nav>
+		<div>
+			<a href="/">Home</a>
+			<a href="/blog">Blog</a>
+			<a href="/projects">Projects</a>
+		</div>
+		<div>
+			<button id="theme-selector" aria-label="Switch to light theme" class="jsonly"> Theme</button>
+		</div>
+	</nav>
+	<article>
+		<section>
+			<header>
+				<h1>{{ title }}</h1>
+				<h3>{{ caption }}</h3>
+			</header>
+			{{{ content }}}
+		</section>
+	</article>
+</body>
+</html>

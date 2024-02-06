@@ -1,0 +1,27 @@
+body.night {
+	--main-60: hsl(0, 0%, 60%);
+	--main-45: hsl(0, 0%, 45%);
+	--main-30: hsl(0, 0%, 30%);
+	--main-15: hsl(0, 0%, 15%);
+
+	--highlight-80: hsl(316, 44%, 80%);
+	--highlight-70: hsl(316, 44%, 70%);
+	--highlight-50: hsl(316, 25%, 50%);
+	
+	--bold-15: hsl(276, 95%, 15%);
+	--bold-25: hsl(276, 95%, 25%);
+}
+
+body.day {
+	--main-60: hsl(30, 75%, 90%);
+	--main-45: hsl(30, 75%, 80%);
+	--main-30: hsl(30, 75%, 70%);
+	--main-15: hsl(30, 75%, 65%);
+
+	--highlight-80: hsl(225, 50%, 65%);
+	--highlight-70: hsl(225, 50%, 45%);
+	--highlight-50: hsl(225, 50%, 30%);
+
+	--bold-15: hsl(226, 90%, 60%);
+	--bold-25: hsl(226, 90%, 70%);
+}

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta-tags />
+	<title>Blog</title>
+	
+	<link rel="alternate" href="/blog/rss.xml" type="application/rss+xml" title="Bob Varioa's Blog" />
+
+	<link rel="stylesheet" href="/styles/common.css" />
+	<script src="/src/theme.js"></script>
+	
+	<style id="jsonly">.jsonly{display: none;}</style>
+	<noscript>
+		<link rel="stylesheet" href="/styles/theme-noscript.css" />
+	</noscript>
+
+	<font href="/assets/RobotoMonoNerdFont-Regular.ttf" family="Roboto Mono" />
+</head>
+<body class="night">
+	<nav>
+		<div>
+			<a href="/">Home</a>
+			<a href="/blog">Blog</a>
+			<a href="/projects">Projects</a>
+		</div>
+		<div>
+			<button id="theme-selector" aria-label="Switch to light theme" class="jsonly"> Theme</button>
+		</div>
+	</nav>
+	<article>
+		<h1>Posts</h1>
+		<posts dir="./posts" template="./post.html" />
+	</article>
+</body>
+</html>
