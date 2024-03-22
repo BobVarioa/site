@@ -13,13 +13,14 @@ import path from "node:path";
 import yaml from "yaml";
 import esbuild from "esbuild";
 import xml from "xml";
-import date from "date-and-time";
+import datelib from "date-and-time";
 import sharp from "sharp";
 
-const md = markdownit({ html: true, linkify: true });
+const md = markdownit({ html: true, linkify: true, breaks: true });
 let opts = {};
 md.use(mdFrontmatter, (fm) => {
 	opts = yaml.parse(fm);
+	console.log(opts);
 });
 md.use(mdHeaderSections);
 md.use(mdAttrs);
@@ -52,7 +53,6 @@ for (const file of fs.readdirSync("./site/assets/", { recursive: true })) {
 }
 
 const css = new Set();
-css.add("/styles/theme-script.css");
 const js = new Set();
 
 const pages = [];
@@ -85,14 +85,17 @@ function posthtmlListFiles(tree) {
 		return node;
 	});
 
-	tree.match({ tag: "font" }, (node) => {
-		return [
-			{ tag: "link", attrs: { rel: "preload", href: node.attrs.href, as: "font", crossorigin: true } },
-			{
-				tag: "style",
-				content: `@font-face{font-family:"${node.attrs.family}";src:url("${node.attrs.href}");font-display: swap;}`,
-			},
-		];
+	tree.match({ tag: "include" }, (node) => {
+		if (node.attrs.type == "font") {
+			return [
+				{ tag: "link", attrs: { rel: "preload", href: node.attrs.href, as: "font", crossorigin: true } },
+				{
+					tag: "style",
+					content: `@font-face{font-family:"${node.attrs.family}";src:url("${node.attrs.href}");font-display: swap;}`,
+				},
+			];
+		}
+		return [];
 	});
 }
 
@@ -102,7 +105,7 @@ function posthtmlListFiles(tree) {
  */
 function posthtmlIpa(tree) {
 	tree.match({ tag: "code" }, (node) => {
-		switch (node.attrs.class) {
+		switch (node.attrs?.class) {
 			case "ipa":
 				const map = {
 					aɪ: "/aɪ/: 'i' in 'tide'",
@@ -189,6 +192,7 @@ function posthtmlBlog(entry) {
 			const posts = [];
 
 			for (const file of files) {
+				console.log(file);
 				const d = path.join(dir, file);
 				const c = md.render(fs.readFileSync(d, "utf8"));
 				const t = fs.readFileSync(
@@ -200,7 +204,7 @@ function posthtmlBlog(entry) {
 
 				if (opts.hidden) continue;
 				opts.name = name;
-				opts.date = date.parse(opts.date, "DD/MM/YYYY");
+				opts.date = datelib.parse(opts.date, "DD/MM/YYYY");
 				opts.path = path.join(entry, node.attrs.dir, name);
 				posts.push(opts);
 
@@ -223,7 +227,7 @@ function posthtmlBlog(entry) {
 			}
 
 			posts
-				.sort((b, a) => date.subtract(b.date, a.date).toMilliseconds())
+				.sort((b, a) => datelib.subtract(b.date, a.date).toMilliseconds())
 				.reverse();
 
 			/**
