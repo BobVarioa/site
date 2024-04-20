@@ -227,7 +227,7 @@ function posthtmlBlog(entry) {
 			}
 
 			posts
-				.sort((b, a) => datelib.subtract(b.date, a.date).toMilliseconds())
+				.sort((b, a) => b.date - a.date)
 				.reverse();
 
 			/**

@@ -1,5 +1,5 @@
 ---
-date: 3/2/24
+date: 03/02/2024
 title: Inital commit!
 tags: meta
 caption: First post!

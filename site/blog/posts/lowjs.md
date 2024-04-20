@@ -1,5 +1,5 @@
 ---
-date: 22/3/24
+date: 22/03/2024
 title: Building my own low-javascript website
 tags: projects, low-javascript, web design
 caption: Suprisingly fun!
