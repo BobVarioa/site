@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
-	const $ = document.querySelector.bind(document);
-	const $$ = document.querySelectorAll.bind(document);
+	const $ = (ele) => document.querySelector(ele);
+	const $$ = (ele) => document.querySelectorAll(ele);
 
 	// handle script / noscript
 	$("#theme-script").attributes.removeNamedItem("disabled");

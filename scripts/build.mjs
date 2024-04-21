@@ -8,7 +8,7 @@ import mdFrontmatter from "markdown-it-front-matter";
 import mdHeaderSections from "markdown-it-header-sections";
 import mdAttrs from "markdown-it-attrs";
 // general
-import fs from "node:fs";
+import fs from "fs-extra";
 import path from "node:path";
 import yaml from "yaml";
 import esbuild from "esbuild";
@@ -213,7 +213,7 @@ function posthtmlBlog(entry) {
 						path.join("./out", entry, node.attrs.dir, name),
 						{ recursive: true }
 					);
-					fs.writeFileSync(
+					fs.outputFileSync(
 						path.join(
 							"./out",
 							entry,
@@ -269,7 +269,7 @@ function posthtmlBlog(entry) {
 				{ declaration: true }
 			);
 
-			fs.writeFileSync(path.join("./out", entry, "rss.xml"), xmlStr);
+			fs.outputFileSync(path.join("./out", entry, "rss.xml"), xmlStr);
 
 			return posts.map((p) => ({
 				tag: "a",
@@ -340,7 +340,7 @@ async function entryPoint(entry) {
 
 	const result = await renderHTML(entry, template, content, opts);
 	fs.mkdirSync(path.join("./out", entry), { recursive: true });
-	fs.writeFileSync(path.join("./out", entry, "index.html"), result.html);
+	fs.outputFileSync(path.join("./out", entry, "index.html"), result.html);
 }
 
 entryPoint("/");
