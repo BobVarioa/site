@@ -4,7 +4,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	// handle script / noscript
 	$("#theme-script").attributes.removeNamedItem("disabled");
-	$("#jsonly").remove();
 
 	const body = $("body");
 	const themeSelector = $("#theme-selector");
