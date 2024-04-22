@@ -9,16 +9,17 @@
 	
 	<link rel="alternate" href="/blog/rss.xml" type="application/rss+xml" title="Bob Varioa's Blog" />
 
-	<link rel="stylesheet" href="/styles/common.css" />
-	<script src="/src/theme.js"></script>
-	
-	<noscript>
-		<link rel="stylesheet" href="/styles/theme-noscript.css" />
-		<style>.jsonly{display: none;}</style>
-	</noscript>
-	<link id="theme-script" rel="stylesheet" href="/styles/theme-script.css" disabled="true"/>
-
-	<include type="font" href="/assets/RobotoMonoNerdFont-Regular.ttf" family="Roboto Mono" />
+	<include type="js" href="/src/theme.js" />
+	<include type="css" href="/styles/common.css" />
+	<include type="css" script href="/styles/theme-script.css" />
+	<include type="css" noscript href="/styles/theme-noscript.css" />
+	<include type="inlinecss" noscript>
+		.jsonly {
+			display: none;
+		}
+	</include>
+	<include type="font" family="Roboto Mono" href="/assets/RobotoMonoNerdFont-Regular.ttf" />
+	<include-anchor />
 </head>
 <body class="night">
 	<nav>

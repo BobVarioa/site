@@ -52,9 +52,6 @@ for (const file of fs.readdirSync("./site/assets/", { recursive: true })) {
 	}
 }
 
-const css = new Set();
-const js = new Set();
-
 const pages = [];
 const donePages = new Set();
 
@@ -73,29 +70,168 @@ function posthtmlListFiles(tree) {
 		return node;
 	});
 
-	tree.match({ tag: "link" }, (node) => {
-		if (node.attrs.rel == "stylesheet") {
-			css.add(node.attrs.href);
+	const includeScript = [];
+	const includeNoScript = [];
+
+	return new Promise(async (res, rej) => {
+		const css = [];
+		const js = [];
+		const font = [];
+
+		tree.match({ tag: "include" }, (node) => {
+			switch (node.attrs.type) {
+				case "css":
+					css.push({
+						href: node.attrs.href,
+						script: node.attrs.script != undefined? true : false,
+						noscript: node.attrs.noscript != undefined? true : false,
+					});
+					return [];
+
+				case "inlinecss":
+					css.push({
+						inline: true,
+						content: node.content.join(""),
+						noscript: node.attrs.noscript!= undefined ? true : false,
+					});
+					return [];
+
+				case "js":
+					js.push({ href: node.attrs.href });
+					return [];
+
+				case "inlinejs":
+					js.push({ inline: true, content: node.content.join("") });
+					return [];
+
+				case "font":
+					font.push({
+						href: node.attrs.href,
+						family: node.attrs.family,
+					});
+					return [];
+
+				default:
+					return [];
+			}
+		});
+
+		let insertedScriptOnly = false;
+
+		for (const file of css) {
+			if (file.inline) {
+				const res = await esbuild.transform(file.content, {
+					loader: "css",
+					minify: true,
+					target: "chrome58",
+				});
+				if (file.noscript) {
+					includeNoScript.push({ tag: "style", content: [res.code] });
+					continue;
+				}
+				includeScript.push({ tag: "style", content: [res.code] });
+			} else {
+				await esbuild.build({
+					entryPoints: [path.join("./site", file.href)],
+					outfile: path.join("./out", file.href),
+					bundle: true,
+					minify: true,
+					sourcemap: true,
+					target: "chrome58",
+				});
+				if (file.noscript) {
+					includeNoScript.push({
+						tag: "link",
+						attrs: { rel: "stylesheet", href: file.href },
+					});
+					continue;
+				}
+				if (file.script) {
+					includeScript.push({
+						tag: "link",
+						attrs: {
+							rel: "stylesheet",
+							href: file.href,
+							disabled: "true",
+							"data-scriptonly": true,
+						},
+					});
+					if (!insertedScriptOnly) {
+						js.push({
+							inline: true,
+							content: `
+								document.addEventListener("DOMContentLoaded", () => {
+									for (const ele of document.querySelectorAll("[data-scriptonly]")) {
+										ele.attributes.removeNamedItem("disabled")
+									}
+								});
+							`,
+						});
+						insertedScriptOnly = true;
+					}
+					continue;
+				}
+
+				includeScript.push({
+					tag: "link",
+					attrs: { rel: "stylesheet", href: file.href },
+				});
+			}
 		}
-		return node;
-	});
 
-	tree.match({ tag: "script" }, (node) => {
-		js.add(node.attrs.src);
-		return node;
-	});
+		for (const file of js) {
+			if (file.inline) {
+				const res = await esbuild.transform(file.content, {
+					loader: "js",
+					minify: true,
+					target: "chrome58",
+				});
+				includeScript.push({ tag: "script", content: [res.code] });
+			} else {
+				await esbuild.build({
+					entryPoints: [path.join("./site", file.href)],
+					outfile: path.join("./out", file.href),
+					bundle: true,
+					minify: true,
+					sourcemap: true,
+					target: "chrome58",
+				});
+				includeScript.push({
+					tag: "script",
+					attrs: { src: file.href, defer: true },
+				});
+			}
+		}
 
-	tree.match({ tag: "include" }, (node) => {
-		if (node.attrs.type == "font") {
-			return [
-				{ tag: "link", attrs: { rel: "preload", href: node.attrs.href, as: "font", crossorigin: true } },
+		for (const file of font) {
+			(file.noscript ? includeNoScript : includeScript).push(
+				{
+					tag: "link",
+					attrs: {
+						rel: "preload",
+						href: file.href,
+						as: "font",
+						crossorigin: true,
+					},
+				},
 				{
 					tag: "style",
-					content: `@font-face{font-family:"${node.attrs.family}";src:url("${node.attrs.href}");font-display: swap;}`,
-				},
-			];
+					content: `@font-face{font-family:"${file.family}";src:url("${file.href}");font-display: swap;}`,
+				}
+			);
 		}
-		return [];
+
+		tree.match({ tag: "include-anchor" }, (node) => {
+			if (includeNoScript.length > 0) {
+				includeScript.push({
+					tag: "noscript",
+					content: includeNoScript,
+				});
+			}
+
+			return includeScript;
+		});
+		res(tree);
 	});
 }
 
@@ -226,9 +362,7 @@ function posthtmlBlog(entry) {
 				});
 			}
 
-			posts
-				.sort((b, a) => b.date - a.date)
-				.reverse();
+			posts.sort((b, a) => b.date - a.date).reverse();
 
 			/**
 			 * @type {import("xml").XmlObject[]}
@@ -348,28 +482,4 @@ while (pages.length > 0) {
 	entryPoint(pages.pop());
 }
 
-for (const file of js) {
-	await esbuild.build({
-		entryPoints: [path.join("./site", file)],
-		outfile: path.join("./out", file),
-		bundle: true,
-		minify: true,
-		sourcemap: true,
-		target: "chrome58",
-	});
-}
-
-for (const file of css) {
-	await esbuild.build({
-		entryPoints: [path.join("./site", file)],
-		outfile: path.join("./out", file),
-		bundle: true,
-		minify: true,
-		sourcemap: true,
-		target: "chrome58",
-	});
-}
-
 console.log(`pages:`, donePages);
-console.log(`css:`, css);
-console.log(`js:`, js);

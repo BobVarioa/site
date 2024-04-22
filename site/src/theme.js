@@ -2,9 +2,6 @@ document.addEventListener("DOMContentLoaded", () => {
 	const $ = (ele) => document.querySelector(ele);
 	const $$ = (ele) => document.querySelectorAll(ele);
 
-	// handle script / noscript
-	$("#theme-script").attributes.removeNamedItem("disabled");
-
 	const body = $("body");
 	const themeSelector = $("#theme-selector");
 
