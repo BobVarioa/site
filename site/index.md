@@ -3,7 +3,7 @@ title: About Me
 template: ./template.html
 ---
 
-![My profile picture](/assets/profile.png){.profile}
+<img src="/assets/profile.png" alt="An image of an androgynous white person with brown hair and a gray hoodie wearing a pair of headphones in a starry night background." class="profile" meta-sizes="200,300"/>
 
 # About Me
 

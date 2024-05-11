@@ -31,19 +31,27 @@ for (const file of fs.readdirSync("./site/assets/", { recursive: true })) {
 	const full = path.join("/assets/", file);
 
 	if (full.endsWith(".png")) {
-		const outPath = full.replace(/(.+)\.([^\.]+)$/, "$1.webp");
-
 		const img = sharp(path.join("./site", full));
 		const meta = await img.metadata();
 
 		images[full] = {
-			path: outPath,
 			width: meta.width,
 			height: meta.height,
-			used: () => {
-				img.webp({ lossless: true }).toFile(
-					path.join("./out", outPath)
-				);
+			used: (sizes) => {
+				const out = [];
+				for (const size of sizes.sort((a,b) => b - a)) {
+					const scaledWidth = size;
+					const scaledHeight = size * (meta.height / meta.width);
+					const outPath = full.replace(
+						/(.+)\.([^\.]+)$/,
+						`$1-${size}.webp`
+					);
+					out.push(outPath);
+					img.resize(scaledWidth, scaledHeight)
+						.webp()
+						.toFile(path.join("./out", outPath));
+				}
+				return out;
 			},
 			// options: [],
 		};
@@ -80,7 +88,7 @@ function posthtmlListFiles(tree) {
 
 		tree.match({ tag: "include" }, (node) => {
 			switch (node.attrs.type) {
-				case "css":					
+				case "css":
 					css.push({
 						inline: node.attrs.inline != undefined,
 						href: node.attrs.href,
@@ -123,7 +131,9 @@ function posthtmlListFiles(tree) {
 		for (const file of css) {
 			if (file.inline) {
 				if (!file.content) {
-					file.content = fs.readFileSync(path.join("./site", file.href))
+					file.content = fs.readFileSync(
+						path.join("./site", file.href)
+					);
 				}
 
 				const res = await esbuild.transform(file.content, {
@@ -439,8 +449,29 @@ function posthtmlBlog(entry) {
 function posthtmlImages(tree) {
 	tree.match({ tag: "img" }, (node) => {
 		const img = images[node.attrs.src];
-		img.used();
-		node.attrs.src = img.path;
+
+		const sizes = [];
+
+		if (node.attrs["meta-sizes"]) {
+			for (const size of node.attrs["meta-sizes"].split(",")) {
+				sizes.push(parseInt(size));
+			}
+			delete node.attrs["meta-sizes"];
+		}
+
+		const paths = img.used(sizes);
+		node.attrs.src = paths[0];
+
+		let srcset = "";
+		const min = Math.min(...sizes)
+		for (let i = 0; i < sizes.length; i++) {
+			srcset += `${paths[i]} ${(sizes[i] / min).toFixed(2)}x`;
+			if (i + 1 < sizes.length) {
+				srcset += ",";
+			}
+		}
+		node.attrs.srcset = srcset;
+
 		node.attrs.width = img.width;
 		node.attrs.height = img.height;
 		node.attrs.loading = "lazy";
