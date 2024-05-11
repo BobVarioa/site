@@ -9,8 +9,16 @@ button {
 }
 
 p {
-	margin-top: 0.5em;
-	margin-bottom: 0.5em;
+	margin: 0.5em 0;
+	max-width: 80ch;
+}
+
+article.centered {
+	text-align: center;
+}
+
+article.centered > section > p {
+	margin: 0.5em auto;
 }
 
 h1 {
