@@ -1,6 +1,7 @@
+const $ = (ele) => document.querySelector(ele);
+const $$ = (ele) => document.querySelectorAll(ele);
+
 document.addEventListener("DOMContentLoaded", () => {
-	const $ = (ele) => document.querySelector(ele);
-	const $$ = (ele) => document.querySelectorAll(ele);
 
 	const body = $("body");
 	const themeSelector = $("#theme-selector");
@@ -9,13 +10,11 @@ document.addEventListener("DOMContentLoaded", () => {
 		if (theme == "day") {
 			body.classList.remove("night");
 			body.classList.add("day");
-			themeSelector.textContent = " Theme";
 			themeSelector.ariaLabel = "Switch to dark theme";
 			window.localStorage.setItem("theme", "day");
 		} else {
 			body.classList.add("night");
 			body.classList.remove("day");
-			themeSelector.textContent = " Theme";
 			themeSelector.ariaLabel = "Switch to light theme";
 			window.localStorage.setItem("theme", "night");
 		}
@@ -45,3 +44,8 @@ document.addEventListener("DOMContentLoaded", () => {
 		}
 	});
 });
+
+
+window.addEventListener("load", () => {
+	$("html").classList.remove("unloaded")
+})

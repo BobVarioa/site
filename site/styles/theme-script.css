@@ -1,3 +1,25 @@
+/* interesting, but no
+@property --main-60 { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --main-45 { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --main-30 { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --main-15 { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --highlight-80 { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --highlight-70 { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --highlight-50 { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --bold-15 { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --bold-25 { syntax: "<color>"; inherits: true; initial-value: #000; }
+
+body {
+	transition-property: --main-15, --main-30, --main-45, --main-60;
+	transition-duration: 350ms;
+	transition-timing-function: ease-in-out;
+} 
+*/
+
+.unloaded * {
+	transition: none !important;
+}
+
 body.night {
 	--main-60: hsl(0, 0%, 60%);
 	--main-45: hsl(0, 0%, 45%);
@@ -13,15 +35,34 @@ body.night {
 }
 
 body.day {
-	--main-60: hsl(30, 75%, 90%);
-	--main-45: hsl(30, 75%, 80%);
-	--main-30: hsl(30, 75%, 70%);
-	--main-15: hsl(30, 75%, 65%);
+	--main-60: hsl(30, 0%, 90%);
+	--main-45: hsl(30, 10%, 80%);
+	--main-30: hsl(30, 20%, 70%);
+	--main-15: hsl(30, 20%, 60%);
 
-	--highlight-80: hsl(225, 50%, 65%);
-	--highlight-70: hsl(225, 50%, 45%);
-	--highlight-50: hsl(225, 50%, 30%);
+	--highlight-80: hsl(225, 60%, 55%);
+	--highlight-70: hsl(225, 60%, 35%);
+	--highlight-50: hsl(225, 60%, 20%);
 
-	--bold-15: hsl(226, 90%, 60%);
-	--bold-25: hsl(226, 90%, 70%);
+	--bold-15: hsl(226, 90%, 20%);
+	--bold-25: hsl(226, 90%, 30%);
+}
+
+button#theme-selector {
+	color: var(--main-15);
+	background-color: var(--main-60);
+	padding: 0.2em;
+	cursor: pointer;
+}
+
+body.night button#theme-selector::before {
+	content: "  ";
+}
+
+body.day button#theme-selector::before {
+	content: "  ";
+}
+
+button#theme-selector:hover {
+	background-color: var(--main-45);
 }

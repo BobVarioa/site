@@ -70,21 +70,22 @@ function posthtmlListFiles(tree) {
 		return node;
 	});
 
-	const includeScript = [];
-	const includeNoScript = [];
-
 	return new Promise(async (res, rej) => {
+		const includeScript = [];
+		const includeNoScript = [];
+
 		const css = [];
 		const js = [];
 		const font = [];
 
 		tree.match({ tag: "include" }, (node) => {
 			switch (node.attrs.type) {
-				case "css":
+				case "css":					
 					css.push({
+						inline: node.attrs.inline != undefined,
 						href: node.attrs.href,
-						script: node.attrs.script != undefined? true : false,
-						noscript: node.attrs.noscript != undefined? true : false,
+						script: node.attrs.script != undefined,
+						noscript: node.attrs.noscript != undefined,
 					});
 					return [];
 
@@ -92,7 +93,8 @@ function posthtmlListFiles(tree) {
 					css.push({
 						inline: true,
 						content: node.content.join(""),
-						noscript: node.attrs.noscript!= undefined ? true : false,
+						script: node.attrs.script != undefined,
+						noscript: node.attrs.noscript != undefined,
 					});
 					return [];
 
@@ -116,10 +118,14 @@ function posthtmlListFiles(tree) {
 			}
 		});
 
-		let insertedScriptOnly = false;
+		let insertScriptOnly = false;
 
 		for (const file of css) {
 			if (file.inline) {
+				if (!file.content) {
+					file.content = fs.readFileSync(path.join("./site", file.href))
+				}
+
 				const res = await esbuild.transform(file.content, {
 					loader: "css",
 					minify: true,
@@ -127,6 +133,18 @@ function posthtmlListFiles(tree) {
 				});
 				if (file.noscript) {
 					includeNoScript.push({ tag: "style", content: [res.code] });
+					continue;
+				}
+				if (file.script) {
+					includeScript.push({
+						tag: "style",
+						content: [res.code],
+						attrs: {
+							disabled: "true",
+							"data-scriptonly": true,
+						},
+					});
+					insertScriptOnly = true;
 					continue;
 				}
 				includeScript.push({ tag: "style", content: [res.code] });
@@ -156,19 +174,7 @@ function posthtmlListFiles(tree) {
 							"data-scriptonly": true,
 						},
 					});
-					if (!insertedScriptOnly) {
-						js.push({
-							inline: true,
-							content: `
-								document.addEventListener("DOMContentLoaded", () => {
-									for (const ele of document.querySelectorAll("[data-scriptonly]")) {
-										ele.attributes.removeNamedItem("disabled")
-									}
-								});
-							`,
-						});
-						insertedScriptOnly = true;
-					}
+					insertScriptOnly = true;
 					continue;
 				}
 
@@ -177,6 +183,18 @@ function posthtmlListFiles(tree) {
 					attrs: { rel: "stylesheet", href: file.href },
 				});
 			}
+		}
+		if (insertScriptOnly) {
+			js.push({
+				inline: true,
+				content: `
+					document.addEventListener("DOMContentLoaded", () => {
+						for (const ele of document.querySelectorAll("[data-scriptonly]")) {
+							ele.attributes.removeNamedItem("disabled")
+						}
+					});
+				`,
+			});
 		}
 
 		for (const file of js) {

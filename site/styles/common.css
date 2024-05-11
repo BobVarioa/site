@@ -37,6 +37,7 @@ pre:has(> code) {
 code {
 	background-color: var(--main-30);
 	color: var(--main-60);
+	transition: color 350ms ease-in-out, background-color 350ms ease-in-out;
 }
 
 pre > code {
@@ -48,6 +49,7 @@ pre > code {
 	position: relative;
 	display: block;
 	border-left: 2px solid var(--main-45);
+	transition: border-left 350ms ease-in-out;
 	overflow-y: clip; /* hide the non needed numbers */
 }
 
@@ -76,6 +78,7 @@ nav a {
 	padding: 0.2em;
 	color: var(--main-15);
 	background-color: var(--main-60);
+	transition: color 350ms ease-in-out, background-color 350ms ease-in-out;
 	text-decoration: none;
 }
 
@@ -85,17 +88,7 @@ nav a:hover {
 
 a {
 	color: var(--highlight-80);
-}
-
-button#theme-selector {
-	color: var(--main-15);
-	background-color: var(--main-60);
-	padding: 0.2em;
-	cursor: pointer;
-}
-
-button#theme-selector:hover {
-	background-color: var(--main-45);
+	transition: color 350ms ease-in-out;
 }
 
 a:hover {
@@ -114,6 +107,8 @@ body {
 
 	background-color: var(--main-15);
 	color: var(--highlight-70);
+	transition: background-color 350ms ease-in-out,
+	            color 350ms ease-in-out;
 }
 
 @media (max-width: 465px) {
@@ -144,6 +139,7 @@ span.ipa {
 	border-bottom: 0.15em dotted var(--highlight-70);
 	line-height: 0.9em;
 	display: inline-block;
+	transition: border-bottom 350ms ease-in-out;
 }
 
 article {

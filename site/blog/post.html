@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="unloaded">
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,7 +10,7 @@
 
 	<include type="js" href="/src/theme.js" />
 	<include type="css" href="/styles/common.css" />
-	<include type="css" script href="/styles/theme-script.css" />
+	<include type="css" script inline href="/styles/theme-script.css" />
 	<include type="css" noscript href="/styles/theme-noscript.css" />
 	<include type="inlinecss" noscript>
 		.jsonly {
@@ -28,7 +28,7 @@
 			<a href="/projects">Projects</a>
 		</div>
 		<div>
-			<button id="theme-selector" aria-label="Switch to light theme" class="jsonly"> Theme</button>
+			<button id="theme-selector" aria-label="Switch to light theme" class="jsonly">Theme</button>
 		</div>
 	</nav>
 	<article>
