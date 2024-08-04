@@ -20,7 +20,6 @@ const md = markdownit({ html: true, linkify: true, breaks: true });
 let opts = {};
 md.use(mdFrontmatter, (fm) => {
 	opts = yaml.parse(fm);
-	console.log(opts);
 });
 md.use(mdHeaderSections);
 md.use(mdAttrs);
@@ -71,6 +70,9 @@ const meta = JSON.parse(fs.readFileSync("./site/meta.json"));
  */
 function posthtmlListFiles(tree) {
 	tree.match({ tag: "a" }, (node) => {
+		if (node.attrs.ignore !== undefined) {
+			return { ...node, attrs: { ...node.attrs, ignore: undefined } }
+		}
 		const link = node.attrs.href;
 		if (link[0] == "/" && !donePages.has(link)) {
 			pages.push(link);
@@ -356,7 +358,6 @@ function posthtmlBlog(entry) {
 			const posts = [];
 
 			for (const file of files) {
-				console.log(file);
 				const d = path.join(dir, file);
 				const c = md.render(fs.readFileSync(d, "utf8"));
 				const t = fs.readFileSync(
@@ -366,10 +367,13 @@ function posthtmlBlog(entry) {
 
 				const name = file.replace(/(.+)\.([^\.]+)$/, "$1");
 
+				console.log(file);
 				if (opts.hidden) continue;
 				opts.name = name;
 				opts.date = datelib.parse(opts.date, "DD/MM/YYYY");
 				opts.path = path.join(entry, node.attrs.dir, name);
+				opts.caption ??= '';
+				console.log(opts);
 				posts.push(opts);
 
 				renderHTML(entry, t, c, opts).then((result) => {
@@ -435,8 +439,11 @@ function posthtmlBlog(entry) {
 
 			return posts.map((p) => ({
 				tag: "a",
-				attrs: { href: p.path },
-				content: [p.title],
+				attrs: { class: "post", href: p.path },
+				content: [
+					{ tag: "p", attrs: { class: "title" }, content: [p.title] },
+					{ tag: "p", attrs: { class: "caption" }, content: [p.caption] },
+				],
 			}));
 		});
 	};

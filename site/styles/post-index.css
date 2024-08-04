@@ -1,0 +1,49 @@
+.post-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr
+}
+
+.post-container .post {
+    display: block;
+    padding: 1em;
+    border: 2px dashed var(--highlight-80);
+    border-radius: 4px;
+    margin: .2em
+}
+
+.post {
+    color: unset;
+    text-decoration: none;
+    transition: background-color .2s ease-in-out
+}
+
+.post:hover {
+    background-color: var(--highlight-50)
+}
+
+.a:hover {
+    background-color: unset
+}
+
+.post .title {
+    color: var(--highlight-80);
+    text-decoration: underline;
+}
+
+.post .title:before {
+    content: "> ";
+    text-decoration: none;
+    display: inline-block;
+    margin-right: 0.5em;
+}
+
+.post .caption:before {
+    content: "- ";
+    text-decoration: none;
+}
+
+.header {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}

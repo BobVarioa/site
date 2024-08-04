@@ -11,6 +11,7 @@
 
 	<include type="js" href="/src/theme.js" />
 	<include type="css" href="/styles/common.css" />
+	<include type="css" href="/styles/post-index.css" />
 	<include type="css" script inline href="/styles/theme-script.css" />
 	<include type="css" noscript href="/styles/theme-noscript.css" />
 	<include type="inlinecss" noscript>
@@ -29,12 +30,20 @@
 			<a href="/projects">Projects</a>
 		</div>
 		<div>
+			<a href="/blog/rss.xml" ignore style="display: inline-block;">
+				<svg fill="currentColor" style="margin: 0; vertical-align: bottom;" width="1.2em" height="1.2em" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M 5 5 L 5 9 C 14.93 9 23 17.07 23 27 L 27 27 C 27 14.85 17.15 5 5 5 z M 5 12 L 5 16 C 11.07 16 16 20.93 16 27 L 20 27 C 20 18.72 13.28 12 5 12 z M 8 21 A 3 3 0 0 0 8 27 A 3 3 0 0 0 8 21 z"/></svg> 
+				RSS Feed
+			</a>
 			<button id="theme-selector" aria-label="Switch to light theme" class="jsonly">Theme</button>
 		</div>
 	</nav>
 	<article>
-		<h1>Posts</h1>
-		<posts dir="./posts" template="./post.html" />
+		<div class="header">
+			<h1>Posts</h1>
+		</div>
+		<div class="post-container">
+			<posts dir="./posts" template="./post.html" />
+		</div>
 	</article>
 </body>
 </html>
